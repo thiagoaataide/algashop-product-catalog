@@ -12,39 +12,57 @@ Contract.make {
         }
         urlPath("/api/v1/products"){
             body([
-                    name: "Notebook X11",
-                    brand: "Deep Diver",
-                    regularPrice: 1500.00,
-                    salePrice: 1000.00,
-                    enabled: true,
-                    categoryId: "46b35641-b0d3-45d9-8ef3-793f9ce89c25",
-                    description: "A Gamer Notebook!"
+                    name: value (
+                            test("Notebook X11"),
+                            stub(nonBlank())
+                    ),
+                    brand: value(
+                            test("Deep Diver"),
+                            stub(nonBlank())
+                    ),
+                    regularPrice: value(
+                            test(1500.00),
+                            stub(number())
+                    ),
+                    salePrice: value(
+                            test(1000.00),
+                            stub(number())
+                    ),
+                    enabled: value(
+                            test(true),
+                            stub(anyBoolean())
+                    ),
+                    categoryId: value(
+                            test("46b35641-b0d3-45d9-8ef3-793f9ce89c25"),
+                            stub(anyUuid())
+                    ),
+                    description: value(
+                            test("A Gamer Notebook!"),
+                            stub(optional(nonBlank()))
+                    )
             ])
         }
-
-        response {
-            status 201
-            headers {
-                contentType 'application/json'
-            }
-            body([
-                    id: anyUuid(),
-                    addedAt: anyIso8601WithOffset(),
-                    name: "Notebook X11",
-                    brand: "Deep Diver",
-                    regularPrice: 1500.00,
-                    salePrice: 1000.00,
-                    inStock: false,
-                    enabled: true,
-                    category: [
-                            id: "46b35641-b0d3-45d9-8ef3-793f9ce89c25",
-                            name: "Notebooks"
-                    ],
-                    description: "A Gamer Notebook!"
-            ])
-        }
-
     }
 
-
+    response {
+        status 201
+        headers {
+            contentType 'application/json'
+        }
+        body([
+                id: anyUuid(),
+                addedAt: anyIso8601WithOffset(),
+                name: fromRequest().body('$.name'),
+                brand: fromRequest().body('$.brand'),
+                regularPrice: fromRequest().body('$.regularPrice'),
+                salePrice: fromRequest().body('$.salePrice'),
+                inStock: false,
+                enabled: fromRequest().body('$.enabled'),
+                category: [
+                        id: fromRequest().body('$.categoryId'),
+                        name: "Notebooks"
+                ],
+                description: fromRequest().body('$.description')
+        ])
+    }
 }
