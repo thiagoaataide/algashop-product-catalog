@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -51,6 +54,57 @@ public class ProductController {
                         .id(input.getCategoryId())
                         .name("Notebooks")
                         .build())
+                .build();
+
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public PageModel filter(
+            @RequestParam(name = "size", required = false) Integer size,
+            @RequestParam(name = "number", required = false) Integer number
+    ) {
+        return PageModel.builder()
+                .number(0)
+                .size(size)
+                .totalPages(1)
+                .totalElements(2)
+                .content(
+                        Arrays.asList(
+                                ProductDetailOutput.builder()
+                                        .id(UUID.randomUUID())
+                                        .addedAt(OffsetDateTime.now())
+                                        .name("Notebook X11")
+                                        .brand("Deep Diver")
+                                        .description("A Gamer Notebook")
+                                        .regularPrice(new BigDecimal(1500))
+                                        .salePrice(new BigDecimal(1000))
+                                        .inStock(true)
+                                        .enabled(true)
+                                        .categoryId(UUID.randomUUID())
+                                        .category(CategoryMinimalOutput.builder()
+                                                .id(UUID.randomUUID())
+                                                .name("Notebooks")
+                                                .build())
+                                        .build(),
+                                ProductDetailOutput.builder()
+                                        .id(UUID.randomUUID())
+                                        .addedAt(OffsetDateTime.now())
+                                        .name("Desktop I9000")
+                                        .brand("Deep Diver")
+                                        .description("A Gamer Notebook")
+                                        .regularPrice(new BigDecimal(3500))
+                                        .salePrice(new BigDecimal(3000))
+                                        .inStock(false)
+                                        .enabled(true)
+                                        .categoryId(UUID.randomUUID())
+                                        .category(CategoryMinimalOutput.builder()
+                                                .id(UUID.randomUUID())
+                                                .name("Desktop")
+                                                .build())
+                                        .build()
+                        )
+                )
                 .build();
 
     }
