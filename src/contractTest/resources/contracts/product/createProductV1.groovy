@@ -37,7 +37,7 @@ Contract.make {
                             stub(anyUuid())
                     ),
                     description: value(
-                            test("A Gamer Notebook!"),
+                            test("A Gamer Notebook"),
                             stub(optional(nonBlank()))
                     )
             ])
@@ -56,10 +56,10 @@ Contract.make {
                 brand: fromRequest().body('$.brand'),
                 regularPrice: fromRequest().body('$.regularPrice'),
                 salePrice: fromRequest().body('$.salePrice'),
-                inStock: false,
+                inStock: anyBoolean(),
                 enabled: fromRequest().body('$.enabled'),
                 category: [
-                        id: fromRequest().body('$.categoryId'),
+                        id: anyUuid(),
                         name: "Notebooks"
                 ],
                 description: fromRequest().body('$.description')
