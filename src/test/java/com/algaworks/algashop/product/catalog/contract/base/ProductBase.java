@@ -3,7 +3,8 @@ package com.algaworks.algashop.product.catalog.contract.base;
 import com.algaworks.algashop.product.catalog.application.ResourceNotFoundException;
 import com.algaworks.algashop.product.catalog.application.product.management.ProductInput;
 import com.algaworks.algashop.product.catalog.application.product.management.ProductManagementApplicationService;
-import com.algaworks.algashop.product.catalog.application.product.query.PageModel;
+import com.algaworks.algashop.product.catalog.application.PageModel;
+import com.algaworks.algashop.product.catalog.application.product.query.CategoryMinimalOutput;
 import com.algaworks.algashop.product.catalog.application.product.query.ProductDetailOutput;
 import com.algaworks.algashop.product.catalog.application.product.query.ProductDetailOutputTesteDatabuilder;
 import com.algaworks.algashop.product.catalog.application.product.query.ProductQueryService;
@@ -19,7 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.UUID;
 
 @WebMvcTest(controllers = ProductController.class)
@@ -40,6 +40,10 @@ public class ProductBase {
 
     private static final UUID invalidProductId = UUID.fromString("c5f7ea67-cf06-4574-aaeb-b3df0ad4baa4");
 
+    private static final UUID updatedProductId = UUID.fromString("fffe6ec2-7103-48b3-8e4f-3b58e43fb75a");
+
+    private static final UUID deletedProductId = UUID.fromString("9676e7f6-1080-40fd-b487-0ca92dacfb83");
+
     @BeforeEach
     void setUp() {
         RestAssuredMockMvc.mockMvc(MockMvcBuilders.webAppContextSetup(context)
@@ -54,6 +58,14 @@ public class ProductBase {
         mockFilterProducts();
 
         mockCreateProduct();
+
+        mockUpdateProduct();
+
+        mockDeleteProduct();
+
+        mockUpdateProductNotFound();
+
+        mockDeleteProductNotFound();
 
         mockInvalidProductFindById();
     }
@@ -95,5 +107,34 @@ public class ProductBase {
                 .thenReturn(ProductDetailOutputTesteDatabuilder.aProduct()
                         .id(validProductId)
                         .build());
+    }
+
+    private void mockUpdateProduct() {
+        Mockito.when(productQueryService.findById(updatedProductId))
+                .thenReturn(ProductDetailOutputTesteDatabuilder.aProduct()
+                        .id(updatedProductId)
+                        .category(CategoryMinimalOutput.builder()
+                                .id(UUID.randomUUID())
+                                .name("Notebook")
+                                .build())
+                        .build());
+    }
+
+    private void mockDeleteProduct() {
+        Mockito.doNothing()
+                .when(productManagementApplicationService)
+                .disable(deletedProductId);
+    }
+
+    private void mockUpdateProductNotFound() {
+        Mockito.doThrow(new ResourceNotFoundException())
+                .when(productManagementApplicationService)
+                .update(Mockito.eq(invalidProductId), Mockito.any(ProductInput.class));
+    }
+
+    private void mockDeleteProductNotFound() {
+        Mockito.doThrow(new ResourceNotFoundException())
+                .when(productManagementApplicationService)
+                .disable(invalidProductId);
     }
 }
