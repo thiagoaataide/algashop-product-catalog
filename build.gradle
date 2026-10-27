@@ -73,3 +73,14 @@ tasks.named('contractTest') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+asciidoctor {
+    dependsOn contractTest
+    inputs.dir snippetsDir
+    attributes 'snippets' : snippetsDir
+    sources {
+        include 'index.adoc'
+    }
+    baseDirFollowsSourceFile()
+    outputDir = file("build/docs/asciidoc")
+}
